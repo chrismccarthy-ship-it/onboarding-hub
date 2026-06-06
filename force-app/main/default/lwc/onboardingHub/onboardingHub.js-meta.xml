@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Onboarding Hub</masterLabel>
+    <description>White-label onboarding, KYC, and enablement dashboard. Renders checklists with progress, steps, and configurable branding. Works internally and on Experience Cloud.</description>
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__HomePage</target>
+        <target>lightning__RecordPage</target>
+        <target>lightningCommunity__Page</target>
+        <target>lightningCommunity__Default</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__AppPage,lightning__HomePage,lightning__RecordPage">
+            <property name="checklistId" type="String" label="Checklist Id" description="Explicit Checklist record Id. Leave blank on a Checklist record page to use the current record." />
+            <property name="configName" type="String" label="Branding Config Name" description="Dashboard_Config__c name to apply (e.g. Citi, Citizens, ICE). Blank uses the checklist's stored config." />
+            <property name="isInternal" type="Boolean" default="true" label="Internal View" description="On for ops/internal view (shows internal notes + actions). Off for client-facing view." />
+        </targetConfig>
+        <targetConfig targets="lightningCommunity__Page,lightningCommunity__Default">
+            <property name="checklistId" type="String" label="Checklist Id" />
+            <property name="configName" type="String" label="Branding Config Name" />
+            <property name="isInternal" type="Boolean" default="false" label="Internal View" />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

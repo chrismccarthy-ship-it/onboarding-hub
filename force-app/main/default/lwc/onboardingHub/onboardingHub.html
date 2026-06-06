@@ -1,0 +1,239 @@
+<template>
+    <div class="hub" style={brandStyle}>
+
+        <!-- LOADING SKELETON -->
+        <template if:true={isLoading}>
+            <div class="skeleton-wrap">
+                <div class="skeleton skeleton-header"></div>
+                <div class="skeleton skeleton-progress"></div>
+                <div class="skeleton skeleton-item"></div>
+                <div class="skeleton skeleton-item"></div>
+                <div class="skeleton skeleton-item"></div>
+            </div>
+        </template>
+
+        <!-- ERROR STATE -->
+        <template if:true={hasError}>
+            <div class="error-state">
+                <lightning-icon icon-name="utility:error" variant="error" size="small"></lightning-icon>
+                <span>{errorMessage}</span>
+            </div>
+        </template>
+
+        <!-- MAIN CONTENT -->
+        <template if:true={isReady}>
+
+            <!-- HEADER -->
+            <template if:true={brand.showHeader}>
+                <div class="hub-header">
+                    <div class="hub-header-left">
+                        <template if:true={brand.logoUrl}>
+                            <img src={brand.logoUrl} alt="Logo" class="hub-logo" />
+                        </template>
+                        <div class="hub-header-text">
+                            <div class="hub-eyebrow">{brand.headerLabel}</div>
+                            <h1 class="hub-title">{brand.dashboardTitle}</h1>
+                        </div>
+                    </div>
+                    <div class="hub-header-right">
+                        <div class="hub-meta-chip">
+                            <span class="chip-dot"></span>
+                            {checklist.Checklist_Type__c}
+                        </div>
+                        <template if:true={isInternal}>
+                            <div class="hub-meta-chip chip-internal">Internal View</div>
+                        </template>
+                    </div>
+                </div>
+            </template>
+
+            <!-- PROGRESS RING + SUMMARY -->
+            <template if:true={brand.showProgress}>
+                <div class="progress-panel">
+                    <div class="progress-ring-wrap">
+                        <svg class="progress-ring" viewBox="0 0 120 120">
+                            <circle class="ring-track" cx="60" cy="60" r="52"></circle>
+                            <circle class="ring-fill" cx="60" cy="60" r="52"
+                                style={ringStyle}></circle>
+                        </svg>
+                        <div class="progress-ring-label">
+                            <div class="progress-ring-pct">{progressDisplay}</div>
+                            <div class="progress-ring-sub">complete</div>
+                        </div>
+                    </div>
+                    <div class="progress-detail">
+                        <div class="progress-detail-label">{brand.progressLabel}</div>
+                        <div class="progress-detail-counts">
+                            <span class="count-done">{itemsComplete}</span>
+                            <span class="count-sep">of</span>
+                            <span class="count-total">{itemsTotal}</span>
+                            <span class="count-word">items complete</span>
+                        </div>
+                        <div class="progress-bar-track">
+                            <div class="progress-bar-fill" style={barStyle}></div>
+                        </div>
+                        <template if:true={overdueCount}>
+                            <div class="overdue-flag">
+                                <lightning-icon icon-name="utility:clock" size="xx-small" variant="error"></lightning-icon>
+                                {overdueCount} overdue
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </template>
+
+            <!-- BUSINESS DETAILS (auto-populated by AI) -->
+            <template if:true={showBusinessDetails}>
+                <div class="details-panel">
+                    <div class="details-header" onclick={toggleDetails}>
+                        <span class="details-title">{brand.detailsLabel}</span>
+                        <lightning-icon icon-name={detailsChevron} size="x-small"></lightning-icon>
+                    </div>
+                    <template if:true={detailsExpanded}>
+                        <div class="details-grid">
+                            <template for:each={businessFields} for:item="field">
+                                <div key={field.label} class="detail-cell">
+                                    <div class="detail-cell-label">{field.label}</div>
+                                    <div class="detail-cell-value">{field.value}</div>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+            </template>
+
+            <!-- CHECKLIST ITEMS -->
+            <div class="items-panel">
+                <div class="items-header">
+                    <span class="items-title">{brand.itemsLabel}</span>
+                    <div class="items-filters">
+                        <template for:each={filterOptions} for:item="f">
+                            <button key={f.value} data-filter={f.value}
+                                class={f.cssClass} onclick={handleFilter}>{f.label}</button>
+                        </template>
+                    </div>
+                </div>
+
+                <div class="items-list">
+                    <template for:each={displayItems} for:item="row">
+                        <div key={row.item.Id} class={row.cardClass}>
+
+                            <!-- Item header row -->
+                            <div class="item-row" data-id={row.item.Id} onclick={toggleItem}>
+                                <div class="item-status-icon">
+                                    <span class={row.statusDotClass}></span>
+                                </div>
+                                <div class="item-main">
+                                    <div class="item-title-row">
+                                        <span class="item-title">{row.item.Title__c}</span>
+                                        <template if:true={row.item.Required__c}>
+                                            <span class="item-required">Required</span>
+                                        </template>
+                                        <template if:true={row.isOverdue}>
+                                            <span class="item-overdue">Overdue</span>
+                                        </template>
+                                    </div>
+                                    <div class="item-sub">
+                                        <span class={row.statusBadgeClass}>{row.item.Status__c}</span>
+                                        <template if:true={row.item.Due_Date__c}>
+                                            <span class="item-due">Due {row.dueDateDisplay}</span>
+                                        </template>
+                                        <template if:true={row.hasSteps}>
+                                            <span class="item-steps-count">{row.stepsCompleteDisplay}</span>
+                                        </template>
+                                    </div>
+                                </div>
+                                <div class="item-chevron">
+                                    <lightning-icon icon-name={row.chevronIcon} size="x-small"></lightning-icon>
+                                </div>
+                            </div>
+
+                            <!-- Expanded body -->
+                            <template if:true={row.expanded}>
+                                <div class="item-body">
+                                    <template if:true={row.item.Description__c}>
+                                        <p class="item-description">{row.item.Description__c}</p>
+                                    </template>
+
+                                    <!-- Internal-only notes -->
+                                    <template if:true={showInternalNotes}>
+                                        <template if:true={row.item.Internal_Notes__c}>
+                                            <div class="internal-note">
+                                                <div class="internal-note-label">
+                                                    <lightning-icon icon-name="utility:salesforce1" size="xx-small"></lightning-icon>
+                                                    Internal Procedure
+                                                </div>
+                                                <p>{row.item.Internal_Notes__c}</p>
+                                            </div>
+                                        </template>
+                                    </template>
+
+                                    <!-- Steps -->
+                                    <template if:true={row.hasSteps}>
+                                        <div class="steps-list">
+                                            <template for:each={row.steps} for:item="step">
+                                                <div key={step.Id} class="step-row">
+                                                    <span class={step.dotClass}></span>
+                                                    <div class="step-content">
+                                                        <span class="step-title">{step.Title__c}</span>
+                                                        <template if:true={step.Description__c}>
+                                                            <span class="step-desc">{step.Description__c}</span>
+                                                        </template>
+                                                    </div>
+                                                    <template if:true={step.canComplete}>
+                                                        <button class="step-complete-btn"
+                                                            data-id={step.Id}
+                                                            onclick={handleCompleteStep}>Mark done</button>
+                                                    </template>
+                                                    <template if:true={step.isComplete}>
+                                                        <lightning-icon icon-name="utility:check" size="xx-small" variant="success"></lightning-icon>
+                                                    </template>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </template>
+
+                                    <!-- Item action chips (internal) -->
+                                    <template if:true={isInternal}>
+                                        <div class="item-actions">
+                                            <template if:true={row.item.AI_Analysis_Enabled__c}>
+                                                <button class="action-chip action-ai" data-id={row.item.Id} onclick={handleAnalyze}>
+                                                    <lightning-icon icon-name="utility:einstein" size="xx-small"></lightning-icon>
+                                                    Analyze Documents
+                                                </button>
+                                            </template>
+                                            <template if:true={row.item.Document_Generation_Enabled__c}>
+                                                <button class="action-chip" data-id={row.item.Id} onclick={handleGenerateDoc}>
+                                                    <lightning-icon icon-name="utility:new_window" size="xx-small"></lightning-icon>
+                                                    Generate &amp; Send
+                                                </button>
+                                            </template>
+                                            <button class="action-chip" data-id={row.item.Id} onclick={handleRemind}>
+                                                <lightning-icon icon-name="utility:notification" size="xx-small"></lightning-icon>
+                                                Send Reminder
+                                            </button>
+                                            <template if:false={row.isComplete}>
+                                                <button class="action-chip action-complete" data-id={row.item.Id} onclick={handleCompleteItem}>
+                                                    <lightning-icon icon-name="utility:check" size="xx-small"></lightning-icon>
+                                                    Mark Complete
+                                                </button>
+                                            </template>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+
+                    <template if:true={noItems}>
+                        <div class="empty-state">
+                            <lightning-icon icon-name="utility:success" size="small"></lightning-icon>
+                            <span>No items match this filter.</span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+        </template>
+    </div>
+</template>

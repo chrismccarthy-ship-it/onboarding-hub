@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>AI_Analysis_Enabled__c</fullName>
+    <label>AI Analysis Enabled</label>
+    <type>Checkbox</type>
+    <defaultValue>false</defaultValue>
+    <description>Whether ops can trigger AI document analysis on this item.</description>
+</CustomField>

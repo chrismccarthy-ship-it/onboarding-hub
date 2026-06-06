@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Dashboard_Config_Name__c</fullName>
+    <label>Dashboard Config Name</label>
+    <type>Text</type>
+    <length>80</length>
+    <description>Which Dashboard_Config__c branding profile to apply (e.g., Citi, Citizens, ICE).</description>
+</CustomField>

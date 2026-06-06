@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Date_of_Incorporation__c</fullName>
+    <label>Date of Incorporation</label>
+    <type>Date</type>
+    <description>Date of incorporation, auto-populated from analyzed documents.</description>
+</CustomField>

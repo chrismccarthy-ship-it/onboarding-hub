@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Employee_User__c</fullName>
+    <label>Employee</label>
+    <type>Lookup</type>
+    <referenceTo>User</referenceTo>
+    <relationshipLabel>Onboarding Checklists</relationshipLabel>
+    <relationshipName>Onboarding_Checklists</relationshipName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>For Employee record type — the employee completing onboarding.</description>
+</CustomField>

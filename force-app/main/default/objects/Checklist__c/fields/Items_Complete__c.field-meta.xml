@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Items_Complete__c</fullName>
+    <label>Items Complete</label>
+    <type>Number</type>
+    <precision>4</precision>
+    <scale>0</scale>
+    <description>Count of completed checklist items (maintained by automation).</description>
+</CustomField>
