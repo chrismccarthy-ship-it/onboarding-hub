@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Onboarding Hub — Preview (Citi · Internal)</title>
+<style>
+  body { margin: 0; background: #E2E8F0; padding: 28px; }
+  .frame { max-width: 920px; margin: 0 auto; box-shadow: 0 8px 40px rgba(15,23,42,.12); border-radius: 18px; overflow: hidden; }
+
+  /* ===== component CSS (from onboardingHub.css; :host vars + Citi brand override) ===== */
+  .hub {
+    --brand-primary: #00857D;
+    --brand-secondary: #00A39B;
+    --brand-accent: #76BC21;
+    --surface: #FFFFFF;
+    --surface-soft: #F8FAFC;
+    --surface-softer: #F1F5F9;
+    --border: #E8EDF3;
+    --text: #0F172A;
+    --text-soft: #64748B;
+    --text-softer: #94A3B8;
+    --radius: 16px;
+    --radius-sm: 10px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: var(--text); background: var(--surface-soft);
+    padding: 1.5rem; -webkit-font-smoothing: antialiased;
+  }
+  .hub * { box-sizing: border-box; }
+
+  .hub-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem; }
+  .hub-header-left { display:flex; align-items:center; gap:16px; }
+  .hub-eyebrow { font-size:11px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:var(--brand-secondary); margin-bottom:2px; }
+  .hub-title { font-size:22px; font-weight:700; margin:0; color:var(--brand-primary); letter-spacing:-0.4px; line-height:1.1; }
+  .hub-header-right { display:flex; align-items:center; gap:8px; }
+  .hub-meta-chip { display:inline-flex; align-items:center; gap:6px; padding:5px 12px; border-radius:999px; background:var(--surface); border:1px solid var(--border); font-size:12px; font-weight:500; color:var(--text-soft); }
+  .chip-dot { width:7px; height:7px; border-radius:50%; background:var(--brand-accent); }
+  .chip-internal { background:var(--brand-primary); color:#fff; border-color:transparent; font-weight:600; }
+
+  .progress-panel { display:flex; align-items:center; gap:28px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:22px 26px; margin-bottom:1rem; box-shadow:0 1px 2px rgba(15,23,42,.03); }
+  .progress-ring-wrap { position:relative; width:104px; height:104px; flex-shrink:0; }
+  .progress-ring { width:104px; height:104px; transform:rotate(-90deg); }
+  .ring-track { fill:none; stroke:var(--surface-softer); stroke-width:10; }
+  .ring-fill { fill:none; stroke:var(--brand-accent); stroke-width:10; stroke-linecap:round; }
+  .progress-ring-label { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .progress-ring-pct { font-size:24px; font-weight:700; color:var(--brand-primary); letter-spacing:-0.5px; line-height:1; }
+  .progress-ring-sub { font-size:10px; color:var(--text-softer); margin-top:2px; }
+  .progress-detail { flex:1; }
+  .progress-detail-label { font-size:13px; font-weight:600; color:var(--text); margin-bottom:8px; }
+  .progress-detail-counts { display:flex; align-items:baseline; gap:6px; margin-bottom:12px; }
+  .count-done { font-size:26px; font-weight:700; color:var(--brand-accent); }
+  .count-sep { font-size:13px; color:var(--text-softer); }
+  .count-total { font-size:26px; font-weight:700; color:var(--text-soft); }
+  .count-word { font-size:13px; color:var(--text-soft); margin-left:4px; }
+  .progress-bar-track { height:6px; background:var(--surface-softer); border-radius:999px; overflow:hidden; }
+  .progress-bar-fill { height:100%; border-radius:999px; background:linear-gradient(90deg,var(--brand-secondary),var(--brand-accent)); }
+  .overdue-flag { display:inline-flex; align-items:center; gap:5px; margin-top:10px; font-size:12px; font-weight:600; color:#DC2626; }
+
+  .details-panel { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:1rem; overflow:hidden; }
+  .details-header { display:flex; align-items:center; justify-content:space-between; padding:16px 22px; cursor:pointer; user-select:none; }
+  .details-title { font-size:14px; font-weight:600; color:var(--text); }
+  .details-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--border); border-top:1px solid var(--border); }
+  .detail-cell { background:var(--surface); padding:14px 22px; }
+  .detail-cell-label { font-size:11px; font-weight:600; color:var(--text-softer); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px; }
+  .detail-cell-value { font-size:14px; color:var(--text); font-weight:500; }
+
+  .items-panel { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; box-shadow:0 1px 2px rgba(15,23,42,.03); }
+  .items-header { display:flex; align-items:center; justify-content:space-between; padding:18px 22px; border-bottom:1px solid var(--border); }
+  .items-title { font-size:15px; font-weight:700; color:var(--brand-primary); }
+  .items-filters { display:flex; gap:6px; }
+  .filter-pill { padding:5px 13px; border-radius:999px; font-size:12px; font-weight:600; border:1px solid var(--border); background:var(--surface); color:var(--text-soft); cursor:pointer; font-family:inherit; }
+  .filter-pill-active { background:var(--brand-primary); color:#fff; border-color:var(--brand-primary); }
+  .items-list { padding:8px; }
+
+  .item-card { border-radius:var(--radius-sm); margin-bottom:6px; border:1px solid transparent; }
+  .item-card-open { background:var(--surface-soft); border-color:var(--border); }
+  .item-row { display:flex; align-items:center; gap:14px; padding:14px 16px; cursor:pointer; user-select:none; }
+  .item-status-icon { flex-shrink:0; }
+  .status-dot { width:14px; height:14px; border-radius:50%; border:2px solid var(--text-softer); display:block; }
+  .status-dot-complete { background:var(--brand-accent); border-color:var(--brand-accent); }
+  .status-dot-progress { border-color:var(--brand-secondary); background:transparent; box-shadow:inset 0 0 0 3px var(--brand-secondary); }
+  .status-dot-overdue { border-color:#DC2626; background:#FEE2E2; }
+  .item-main { flex:1; min-width:0; }
+  .item-title-row { display:flex; align-items:center; gap:8px; margin-bottom:4px; flex-wrap:wrap; }
+  .item-title { font-size:14px; font-weight:600; color:var(--text); }
+  .item-required { font-size:10px; font-weight:700; color:var(--brand-secondary); background:rgba(46,117,182,.1); padding:1px 6px; border-radius:4px; text-transform:uppercase; letter-spacing:0.3px; }
+  .item-overdue { font-size:10px; font-weight:700; color:#DC2626; background:#FEE2E2; padding:1px 6px; border-radius:4px; text-transform:uppercase; letter-spacing:0.3px; }
+  .item-sub { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .status-badge { font-size:11px; font-weight:600; padding:2px 8px; border-radius:6px; }
+  .badge-complete { background:rgba(5,109,174,.12); color:var(--brand-accent); }
+  .badge-progress { background:rgba(0,102,179,.12); color:var(--brand-secondary); }
+  .badge-overdue { background:#FEE2E2; color:#DC2626; }
+  .badge-default { background:var(--surface-softer); color:var(--text-soft); }
+  .item-due { font-size:12px; color:var(--text-softer); }
+  .item-steps-count { font-size:12px; color:var(--text-softer); }
+  .item-chevron { flex-shrink:0; color:var(--text-softer); display:flex; }
+
+  .item-body { padding:4px 16px 16px 44px; }
+  .item-description { font-size:13px; color:var(--text-soft); line-height:1.6; margin:0 0 12px; }
+  .internal-note { background:rgba(0,59,112,.05); border-left:3px solid var(--brand-primary); border-radius:6px; padding:10px 14px; margin-bottom:12px; }
+  .internal-note-label { display:flex; align-items:center; gap:5px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--brand-primary); margin-bottom:4px; }
+  .internal-note p { font-size:13px; color:var(--text-soft); margin:0; line-height:1.5; }
+
+  .steps-list { display:flex; flex-direction:column; gap:2px; margin-bottom:12px; }
+  .step-row { display:flex; align-items:center; gap:12px; padding:9px 12px; border-radius:8px; }
+  .step-dot { width:9px; height:9px; border-radius:50%; border:2px solid var(--text-softer); flex-shrink:0; }
+  .step-dot-done { background:var(--brand-accent); border-color:var(--brand-accent); }
+  .step-content { flex:1; display:flex; flex-direction:column; gap:1px; }
+  .step-title { font-size:13px; font-weight:500; color:var(--text); }
+  .step-complete-btn { font-size:11px; font-weight:600; color:var(--brand-secondary); background:transparent; border:1px solid var(--border); padding:4px 10px; border-radius:6px; cursor:pointer; font-family:inherit; }
+
+  .item-actions { display:flex; gap:8px; flex-wrap:wrap; }
+  .action-chip { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:var(--text-soft); background:var(--surface); border:1px solid var(--border); padding:6px 12px; border-radius:8px; cursor:pointer; font-family:inherit; }
+  .action-ai { color:var(--brand-accent); border-color:rgba(5,109,174,.3); }
+  .action-complete { color:var(--brand-primary); }
+  .ico { width:13px; height:13px; display:inline-block; }
+  .chev { width:16px; height:16px; }
+</style>
+</head>
+<body>
+<div class="frame">
+<div class="hub">
+
+  <!-- HEADER -->
+  <div class="hub-header">
+    <div class="hub-header-left">
+      <div class="hub-header-text">
+        <div class="hub-eyebrow">Welcome to Citizens</div>
+        <h1 class="hub-title">Citizens Commercial Onboarding</h1>
+      </div>
+    </div>
+    <div class="hub-header-right">
+      <div class="hub-meta-chip"><span class="chip-dot"></span> Onboarding</div>
+      <div class="hub-meta-chip chip-internal">Internal View</div>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-panel">
+    <div class="progress-ring-wrap">
+      <svg class="progress-ring" viewBox="0 0 120 120">
+        <circle class="ring-track" cx="60" cy="60" r="52"></circle>
+        <circle class="ring-fill" cx="60" cy="60" r="52" style="stroke-dasharray:326.726; stroke-dashoffset:285.885;"></circle>
+      </svg>
+      <div class="progress-ring-label">
+        <div class="progress-ring-pct">13%</div>
+        <div class="progress-ring-sub">complete</div>
+      </div>
+    </div>
+    <div class="progress-detail">
+      <div class="progress-detail-label">Onboarding Status</div>
+      <div class="progress-detail-counts">
+        <span class="count-done">1</span><span class="count-sep">of</span><span class="count-total">8</span><span class="count-word">items complete</span>
+      </div>
+      <div class="progress-bar-track"><div class="progress-bar-fill" style="width:12.5%;"></div></div>
+      <div class="overdue-flag">⏱ 1 overdue</div>
+    </div>
+  </div>
+
+  <!-- BUSINESS DETAILS (internal) -->
+  <div class="details-panel">
+    <div class="details-header">
+      <span class="details-title">Business Information</span>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>
+    </div>
+    <div class="details-grid">
+      <div class="detail-cell"><div class="detail-cell-label">Legal Entity Name</div><div class="detail-cell-value">Lakeside Regional Holdings, Inc.</div></div>
+      <div class="detail-cell"><div class="detail-cell-label">DBA Name</div><div class="detail-cell-value">Lakeside Bank</div></div>
+      <div class="detail-cell"><div class="detail-cell-label">Business Address</div><div class="detail-cell-value">4400 Lakeshore Dr, Suite 900, Chicago, IL 60611</div></div>
+      <div class="detail-cell"><div class="detail-cell-label">Tax ID / EIN</div><div class="detail-cell-value">36-4xxxxxx</div></div>
+      <div class="detail-cell"><div class="detail-cell-label">Date of Incorporation</div><div class="detail-cell-value">2009-03-17</div></div>
+      <div class="detail-cell"><div class="detail-cell-label">Client Segment</div><div class="detail-cell-value">B2B</div></div>
+    </div>
+  </div>
+
+  <!-- ITEMS -->
+  <div class="items-panel">
+    <div class="items-header">
+      <span class="items-title">What We Need From You</span>
+      <div class="items-filters">
+        <button class="filter-pill filter-pill-active">All</button>
+        <button class="filter-pill">Open</button>
+        <button class="filter-pill">Overdue</button>
+        <button class="filter-pill">Complete</button>
+      </div>
+    </div>
+    <div class="items-list">
+
+      <!-- Item 1: Completed (expanded) -->
+      <div class="item-card item-card-open">
+        <div class="item-row">
+          <div class="item-status-icon"><span class="status-dot status-dot-complete"></span></div>
+          <div class="item-main">
+            <div class="item-title-row"><span class="item-title">Business Verification Documents</span><span class="item-required">Required</span></div>
+            <div class="item-sub"><span class="status-badge badge-complete">Completed</span><span class="item-due">Due Jun 1</span></div>
+          </div>
+          <div class="item-chevron"><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg></div>
+        </div>
+        <div class="item-body">
+          <p class="item-description">Provide articles of incorporation, EIN letter, and proof of business address.</p>
+          <div class="internal-note">
+            <div class="internal-note-label">☁ Internal Procedure</div>
+            <p>Run through KYC/AML screening. Verify against OFAC list. Escalate to compliance if entity flagged.</p>
+          </div>
+          <div class="item-actions">
+            <button class="action-chip action-ai">✨ Analyze Documents</button>
+            <button class="action-chip">🔔 Send Reminder</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Item 2: Overdue (collapsed) -->
+      <div class="item-card">
+        <div class="item-row">
+          <div class="item-status-icon"><span class="status-dot status-dot-overdue"></span></div>
+          <div class="item-main">
+            <div class="item-title-row"><span class="item-title">NACHA File Specification Review</span><span class="item-required">Required</span><span class="item-overdue">Overdue</span></div>
+            <div class="item-sub"><span class="status-badge badge-overdue">In Progress</span><span class="item-due">Due Jun 7</span></div>
+          </div>
+          <div class="item-chevron"><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+        </div>
+      </div>
+
+      <!-- Item 3: In Progress with steps (expanded) -->
+      <div class="item-card item-card-open">
+        <div class="item-row">
+          <div class="item-status-icon"><span class="status-dot status-dot-progress"></span></div>
+          <div class="item-main">
+            <div class="item-title-row"><span class="item-title">SFTP Integration Setup</span><span class="item-required">Required</span></div>
+            <div class="item-sub"><span class="status-badge badge-progress">In Progress</span><span class="item-due">Due Jun 13</span><span class="item-steps-count">1/3 steps</span></div>
+          </div>
+          <div class="item-chevron"><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg></div>
+        </div>
+        <div class="item-body">
+          <p class="item-description">Establish the secure SFTP connection for automated NACHA file transfer.</p>
+          <div class="internal-note">
+            <div class="internal-note-label">☁ Internal Procedure</div>
+            <p>Provision SFTP credentials via the integrations team. Whitelist client IP. Test connection before UAT.</p>
+          </div>
+          <div class="steps-list">
+            <div class="step-row"><span class="step-dot step-dot-done"></span><div class="step-content"><span class="step-title">Exchange SFTP credentials</span></div><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#056DAE" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>
+            <div class="step-row"><span class="step-dot"></span><div class="step-content"><span class="step-title">Whitelist client IP addresses</span></div><button class="step-complete-btn">Mark done</button></div>
+            <div class="step-row"><span class="step-dot"></span><div class="step-content"><span class="step-title">Test file transfer end-to-end</span></div><button class="step-complete-btn">Mark done</button></div>
+          </div>
+          <div class="item-actions">
+            <button class="action-chip">🔔 Send Reminder</button>
+            <button class="action-chip action-complete">✓ Mark Complete</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Item 4: Not Started (collapsed, not required) -->
+      <div class="item-card">
+        <div class="item-row">
+          <div class="item-status-icon"><span class="status-dot"></span></div>
+          <div class="item-main">
+            <div class="item-title-row"><span class="item-title">Remittance Rules Configuration</span></div>
+            <div class="item-sub"><span class="status-badge badge-default">Not Started</span><span class="item-due">Due Jun 18</span></div>
+          </div>
+          <div class="item-chevron"><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+        </div>
+      </div>
+
+      <!-- Item 5: Not Started (collapsed) -->
+      <div class="item-card">
+        <div class="item-row">
+          <div class="item-status-icon"><span class="status-dot"></span></div>
+          <div class="item-main">
+            <div class="item-title-row"><span class="item-title">Project Design Sign-Off</span><span class="item-required">Required</span></div>
+            <div class="item-sub"><span class="status-badge badge-default">Not Started</span><span class="item-due">Due Jun 20</span></div>
+          </div>
+          <div class="item-chevron"><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+        </div>
+      </div>
+
+      <!-- Item 6: Not Started w/ steps (collapsed) -->
+      <div class="item-card">
+        <div class="item-row">
+          <div class="item-status-icon"><span class="status-dot"></span></div>
+          <div class="item-main">
+            <div class="item-title-row"><span class="item-title">UAT Execution &amp; Sign-Off</span><span class="item-required">Required</span></div>
+            <div class="item-sub"><span class="status-badge badge-default">Not Started</span><span class="item-due">Due Jun 28</span><span class="item-steps-count">0/3 steps</span></div>
+          </div>
+          <div class="item-chevron"><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+        </div>
+      </div>
+
+      <!-- Item 7: Internal-only (expanded) -->
+      <div class="item-card item-card-open">
+        <div class="item-row">
+          <div class="item-status-icon"><span class="status-dot"></span></div>
+          <div class="item-main">
+            <div class="item-title-row"><span class="item-title">Internal Risk &amp; Compliance Review</span><span class="item-required">Required</span></div>
+            <div class="item-sub"><span class="status-badge badge-default">Not Started</span><span class="item-due">Due Jun 30</span></div>
+          </div>
+          <div class="item-chevron"><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg></div>
+        </div>
+        <div class="item-body">
+          <p class="item-description">Final internal compliance gate before go-live.</p>
+          <div class="internal-note">
+            <div class="internal-note-label">☁ Internal Procedure</div>
+            <p>INTERNAL ONLY. Compliance officer signs off on transaction monitoring rules. Confirm SAR thresholds configured.</p>
+          </div>
+          <div class="item-actions">
+            <button class="action-chip">🔔 Send Reminder</button>
+            <button class="action-chip action-complete">✓ Mark Complete</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Item 8: Not Started w/ steps (collapsed) -->
+      <div class="item-card">
+        <div class="item-row">
+          <div class="item-status-icon"><span class="status-dot"></span></div>
+          <div class="item-main">
+            <div class="item-title-row"><span class="item-title">Go-Live &amp; Post-Launch Support</span><span class="item-required">Required</span></div>
+            <div class="item-sub"><span class="status-badge badge-default">Not Started</span><span class="item-due">Due Jul 6</span><span class="item-steps-count">0/3 steps</span></div>
+          </div>
+          <div class="item-chevron"><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</div>
+</body>
+</html>

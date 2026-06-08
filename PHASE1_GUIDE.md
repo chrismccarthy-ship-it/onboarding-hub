@@ -4,6 +4,26 @@ A white-label onboarding / KYC / enablement command center for Salesforce. This 
 
 ---
 
+## Preview
+
+The `onboardingHub` component, populated with the Phase 1 NACHA demo scenario (Lakeside Regional Holdings). More renders and the standalone HTML mockups live in [`docs/preview/`](docs/preview/).
+
+**Internal ops view — instant rebrand by config (same data, same code):**
+
+| Citi | Citizens |
+|---|---|
+| ![Internal view, Citi branding](docs/preview/01-internal-citi.png) | ![Internal view, Citizens branding](docs/preview/02-internal-citizens.png) |
+
+**External / Experience Cloud portal view, and mobile:**
+
+| Portal (desktop) | Portal (mobile) |
+|---|---|
+| ![External portal view](docs/preview/03-portal-external.png) | ![Portal on mobile](docs/preview/04-portal-mobile.png) |
+
+> The portal view is produced by the **same component** with `isInternal = false`. Internal procedure notes, the business-profile panel, and action chips are hidden — and items flagged `Visible_In_Portal__c = false` (e.g. *Internal Risk & Compliance Review*) are **filtered server-side in `getDashboard()`**, so external users never receive them and progress recalculates accordingly (1 of 7 = 14%, vs 1 of 8 internally).
+
+---
+
 ## What's in Phase 1
 
 **4 custom objects**
