@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RemoteSiteSetting xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>PLACEHOLDER — edit the URL to your SMS provider host, then set isActive=true and enable the SMS channel config.</description>
+    <disableProtocolSecurity>false</disableProtocolSecurity>
+    <isActive>false</isActive>
+    <url>https://sms.example.com</url>
+</RemoteSiteSetting>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Enabled__c</fullName>
+    <label>Enabled</label>
+    <type>Checkbox</type>
+    <defaultValue>false</defaultValue>
+    <description>When true (and Endpoint set), this channel performs a real callout. When false, it is Simulated.</description>
+</CustomField>

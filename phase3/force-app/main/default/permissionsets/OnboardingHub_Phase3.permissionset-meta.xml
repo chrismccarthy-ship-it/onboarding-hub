@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>Onboarding Hub Phase 3</label>
+    <hasActivationRequired>false</hasActivationRequired>
+
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>true</modifyAllRecords>
+        <object>Notification_Log__c</object>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+
+    <fieldPermissions><editable>true</editable><field>Notification_Log__c.Checklist_Item__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>Notification_Log__c.Channel__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>Notification_Log__c.Status__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>Notification_Log__c.Recipient__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>Notification_Log__c.Message__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>Notification_Log__c.Sent_Date__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>Checklist_Item__c.Escalation_Level__c</field><readable>true</readable></fieldPermissions>
+
+    <classAccesses><apexClass>OnboardingNotifier</apexClass><enabled>true</enabled></classAccesses>
+    <classAccesses><apexClass>OnboardingReminderBatch</apexClass><enabled>true</enabled></classAccesses>
+    <classAccesses><apexClass>OnboardingReminderScheduler</apexClass><enabled>true</enabled></classAccesses>
+    <classAccesses><apexClass>OnboardingDocGenerator</apexClass><enabled>true</enabled></classAccesses>
+    <classAccesses><apexClass>OnboardingDesignDocController</apexClass><enabled>true</enabled></classAccesses>
+
+    <pageAccesses><apexPage>OnboardingDesignDoc</apexPage><enabled>true</enabled></pageAccesses>
+</PermissionSet>
